@@ -43,7 +43,7 @@
   html.classList.add('building');
 
   var isMobile = window.innerWidth < 700;
-  var N = isMobile ? 6 : 12;
+  var N = isMobile ? 6 : 14;
   var COLORS = ['#ff8fab', '#7dd3fc', '#86efac', '#c4b5fd', '#fdba74', '#fde68a', '#f9a8d4', '#67e8f9', '#a7f3d0', '#fca5a5', '#93c5fd', '#d8b4fe'];
 
   var state = {
@@ -164,7 +164,7 @@
     nodes.forEach(function (o) { o.node.textContent = ''; });
     el.classList.add('built');
     var caret = document.createElement('span'); caret.className = 'caret';
-    var dur = Math.max(260, Math.min(totalChars * 24, 850));
+    var dur = Math.max(260, Math.min(totalChars * 18, 650));
     var t0 = performance.now();
     return new Promise(function (resolve) {
       (function step() {
@@ -207,7 +207,7 @@
     a.k = .16;
     a.tx = r0.left + 2; a.ty = r0.top + 2;
     var r;
-    return wait(240 + Math.random() * 120).then(function () {
+    return wait(160 + Math.random() * 90).then(function () {
       if (gen !== state.gen) return;
       r = docRect(el);
       rulerOn();
@@ -222,11 +222,11 @@
       a.tx = r.vx + r.w; a.ty = r.vy + r.h;
       var step;
       if (kind === 'media') {
-        step = wait(280).then(function () { wf.classList.add('fill'); return wait(380); }).then(function () { if (gen === state.gen) markBuilt(el, 'media'); return wait(160); });
+        step = wait(220).then(function () { wf.classList.add('fill'); return wait(300); }).then(function () { if (gen === state.gen) markBuilt(el, 'media'); return wait(160); });
       } else if (kind === 'type') {
         step = wait(200).then(function () { a.tx = r.vx + 6; a.ty = r.vy + r.h * .6; return typeIn(el, gen); }).then(function () { counters(el); });
       } else if (kind === 'wipe') {
-        step = wait(220).then(function () { a.tx = r.vx; a.ty = r.vy + r.h * .5; markBuilt(el, 'wipe'); setTimeout(function () { a.tx = r.vx + r.w; }, 30); return wait(560); });
+        step = wait(220).then(function () { a.tx = r.vx; a.ty = r.vy + r.h * .5; markBuilt(el, 'wipe'); setTimeout(function () { a.tx = r.vx + r.w; }, 30); return wait(460); });
       } else {
         step = wait(220).then(function () { markBuilt(el, 'pop'); return wait(220); });
       }
@@ -279,7 +279,7 @@
       }
     });
     state.waitingSince.forEach(function (since, el) {
-      if (now - since > 3200 && !el.classList.contains('built')) {
+      if (now - since > 2500 && !el.classList.contains('built')) {
         var idx = state.queue.indexOf(el);
         if (idx > -1) state.queue.splice(idx, 1);
         markBuilt(el, el.getAttribute('data-b') === 'wipe' ? 'wipe' : 'pop');
@@ -325,7 +325,7 @@
       updateHud();
       els.forEach(function (el) { io.unobserve(el); io.observe(el); });
       agents.forEach(function (a) { worker(a, gen); });
-    }, 1500);
+    }, 1300);
   }
 
   function replay() {

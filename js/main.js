@@ -99,6 +99,19 @@
     });
   });
 
+  /* ---------- Mobile menu ---------- */
+  var nav = $('#nav'), menuBtn = $('#menuBtn');
+  if (menuBtn) {
+    menuBtn.addEventListener('click', function () {
+      var open = nav.classList.toggle('open');
+      menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    });
+    $$('.nav ul a').forEach(function (a) {
+      a.addEventListener('click', function () { nav.classList.remove('open'); menuBtn.setAttribute('aria-expanded', 'false'); });
+    });
+  }
+
   /* ---------- Active nav link ---------- */
   var links = $$('.nav ul a');
   var secs = links.map(function (a) { return $(a.getAttribute('href')); });
