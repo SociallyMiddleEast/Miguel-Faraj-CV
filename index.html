@@ -47,17 +47,19 @@
 
 <!-- ============ HERO ============ -->
 <section class="hero" id="hero">
+  <canvas id="pcloud" aria-hidden="true"></canvas>
   <div class="wrap hero-grid">
     <div class="hero-kicker" data-b="type">
       <strong>Senior Digital Engineer</strong><br>Industrial systems builder
     </div>
     <div class="hero-note" data-b="type">Every plant<br>a different story</div>
 
-    <div class="bigword" data-b="wipe" aria-hidden="true">PORTFOLIO</div>
+    <div class="bigword" data-b="wipe" data-text="PORTFOLIO" aria-hidden="true">PORTFOLIO</div>
 
     <figure class="hero-photo" data-b="media">
       <img src="assets/miguel.webp" alt="Portrait of Miguel Faraj" width="760" height="1106">
     </figure>
+    <button type="button" class="p-hint" id="pHint" aria-label="Turn the photo into particles"><i></i><span>Click me</span></button>
 
     <div class="hero-left">
       <span class="hello" data-b="type">Hello, I'm</span>
@@ -323,5 +325,6 @@
 <script src="js/visuals.js"></script>
 <script src="js/build.js"></script>
 <script src="js/main.js"></script>
+<script src="js/particles.js"></script>
 </body>
 </html>

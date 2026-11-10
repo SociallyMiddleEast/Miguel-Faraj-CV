@@ -10,6 +10,7 @@ css/style.css           design and build-animation styles
 js/build.js             the live-build engine (agents, wireframes, typing)
 js/visuals.js           the project "screens" drawn in SVG
 js/main.js              filters, search, pages, before/after slider, copy buttons, clock
+js/particles.js         the particle portrait in the hero (WebGL)
 assets/miguel.webp      portrait (background removed)
 assets/Miguel_Faraj_CV.pdf
 assets/fonts/           Anton, Kaushan Script, Manrope (SIL Open Font License)
@@ -23,6 +24,12 @@ assets/fonts/           Anton, Kaushan Script, Manrope (SIL Open Font License)
 4. After a minute the site is live at that address.
 
 To preview on your computer first, open the folder in VS Code and use the Live Server extension (opening `index.html` directly by double-click also works).
+
+## Particle portrait
+
+Click the hero photo and it bursts into a glowing 3D point cloud of you that turns with the mouse, and the big "PORTFOLIO" word changes from red to silver. Click again to bring the photo back. It also plays once on its own a few seconds after the page finishes building, then returns to the photo after 9 seconds.
+
+The particles are made from `assets/miguel.webp`, so changing the photo changes the portrait. Browsers only allow this when the page is served from a web address (GitHub Pages, or Live Server locally). If you open `index.html` by double-clicking, everything else works but the photo stays a normal photo.
 
 ## Editing
 

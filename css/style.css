@@ -328,6 +328,37 @@ p { margin: 0; }
 .replay { background: none; border: 1px solid var(--line-2); padding: 8px 14px; font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; transition: all .2s; }
 .replay:hover { border-color: var(--blue); color: #9cc0ff; }
 
+
+/* ---------------- PARTICLE PORTRAIT ---------------- */
+#pcloud { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+.hero-photo { transition: opacity .9s var(--ease), filter .9s var(--ease); }
+.hero-photo.p-ready { cursor: pointer; }
+.hero.particles .hero-photo { opacity: 0; filter: blur(6px) brightness(1.6); }
+.hero.particles .hero-photo.p-ready { cursor: pointer; }
+.bigword::after {
+  content: attr(data-text); position: absolute; inset: 0;
+  background: linear-gradient(180deg, #e9e4dc 0%, #a39d94 34%, #4a4540 70%, transparent 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  opacity: 0; transition: opacity 1.2s var(--ease);
+}
+.hero.particles .bigword::after { opacity: 1; }
+.p-hint {
+  position: absolute; z-index: 4; left: 50%; top: 58%; transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  background: none; border: 0; cursor: pointer; color: #fff; padding: 0;
+  transition: opacity .5s;
+}
+.p-hint i { width: 46px; height: 46px; border-radius: 50%; border: 1.5px solid var(--red); position: relative; animation: pRing 1.8s ease-out infinite; }
+.p-hint i::after { content: ""; position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px; border-radius: 50%; background: var(--red); }
+.p-hint span { font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; background: rgba(0,0,0,.6); padding: 3px 8px; }
+.p-hint.gone { opacity: 0; pointer-events: none; }
+.js.building .p-hint { opacity: 0; }
+@keyframes pRing { 0% { box-shadow: 0 0 0 0 rgba(240,68,58,.6); } 100% { box-shadow: 0 0 0 18px rgba(240,68,58,0); } }
+.p-ripple { position: absolute; z-index: 4; width: 20px; height: 20px; margin: -10px 0 0 -10px; border: 2px solid var(--red); border-radius: 50%; pointer-events: none; animation: pRip .9s var(--ease) forwards; }
+@keyframes pRip { to { transform: scale(5); opacity: 0; } }
+@media (max-width: 800px) { .p-hint { top: 40%; } }
+@media (prefers-reduced-motion: reduce) { .p-hint { display: none; } }
+
 /* ==========================================================================
    LIVE BUILD LAYER — agents, wireframes, guides, HUD
    ========================================================================== */
