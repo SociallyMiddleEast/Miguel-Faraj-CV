@@ -329,35 +329,48 @@ p { margin: 0; }
 .replay:hover { border-color: var(--blue); color: #9cc0ff; }
 
 
-/* ---------------- PARTICLE PORTRAIT ---------------- */
-#pcloud { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
-.hero-photo { transition: opacity .9s var(--ease), filter .9s var(--ease); }
-.hero-photo.p-ready { cursor: pointer; }
-.hero.particles .hero-photo { opacity: 0; filter: blur(6px) brightness(1.6); }
-.hero.particles .hero-photo.p-ready { cursor: pointer; }
-.bigword::after {
-  content: attr(data-text); position: absolute; inset: 0;
-  background: linear-gradient(180deg, #e9e4dc 0%, #a39d94 34%, #4a4540 70%, transparent 100%);
+/* ---------------- PARTICLE ENTRANCE ---------------- */
+html.gate-open, html.gate-open body { overflow: hidden; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.gate { position: fixed; inset: 0; z-index: 200; background: #050505; overflow: hidden; transition: opacity 1s var(--ease), transform 1.2s var(--ease); }
+.gate::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size: 64px 64px; }
+.gate::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(60% 55% at 50% 55%, transparent 40%, rgba(0,0,0,.7)); }
+.gate.leaving { opacity: 0; transform: scale(1.04); pointer-events: none; }
+.gate.hidden { display: none; }
+.gate-word {
+  position: absolute; left: 50%; top: 13vh; transform: translateX(-50%);
+  font-family: var(--display); font-size: min(21vw, 40vh); line-height: .82; letter-spacing: .01em; white-space: nowrap; user-select: none;
+  background: linear-gradient(180deg, #ece7df 0%, #b3ada4 28%, #6a645c 58%, #2a2622 82%, transparent 100%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
-  opacity: 0; transition: opacity 1.2s var(--ease);
+  opacity: 0; transition: opacity 1.4s var(--ease) .2s, transform 1.4s var(--ease) .2s;
 }
-.hero.particles .bigword::after { opacity: 1; }
-.p-hint {
-  position: absolute; z-index: 4; left: 50%; top: 58%; transform: translate(-50%, -50%);
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
-  background: none; border: 0; cursor: pointer; color: #fff; padding: 0;
-  transition: opacity .5s;
+.gate.ready .gate-word { opacity: 1; }
+.gate-fig { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); width: min(61vh, 96vw); aspect-ratio: 760 / 1106; }
+.gate-fig img { display: block; width: 100%; height: 100%; opacity: 0; }
+#gateCanvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
+.gate-reveal, .dots-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: rgba(10,10,12,.72); color: var(--text); border: 1px solid var(--line-2); border-radius: 999px;
+  padding: 11px 20px 11px 14px; cursor: pointer; font: 800 11.5px/1 var(--body); letter-spacing: .16em; text-transform: uppercase;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  transition: border-color .25s, background .25s, transform .3s var(--ease), opacity .6s var(--ease);
 }
-.p-hint i { width: 46px; height: 46px; border-radius: 50%; border: 1.5px solid var(--red); position: relative; animation: pRing 1.8s ease-out infinite; }
-.p-hint i::after { content: ""; position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px; border-radius: 50%; background: var(--red); }
-.p-hint span { font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; background: rgba(0,0,0,.6); padding: 3px 8px; }
-.p-hint.gone { opacity: 0; pointer-events: none; }
-.js.building .p-hint { opacity: 0; }
-@keyframes pRing { 0% { box-shadow: 0 0 0 0 rgba(240,68,58,.6); } 100% { box-shadow: 0 0 0 18px rgba(240,68,58,0); } }
-.p-ripple { position: absolute; z-index: 4; width: 20px; height: 20px; margin: -10px 0 0 -10px; border: 2px solid var(--red); border-radius: 50%; pointer-events: none; animation: pRip .9s var(--ease) forwards; }
-@keyframes pRip { to { transform: scale(5); opacity: 0; } }
-@media (max-width: 800px) { .p-hint { top: 40%; } }
-@media (prefers-reduced-motion: reduce) { .p-hint { display: none; } }
+.gate-reveal:hover, .dots-btn:hover { border-color: var(--red); background: rgba(240,68,58,.16); }
+.gate-reveal { position: absolute; z-index: 2; left: 50%; bottom: max(7vh, 28px); transform: translate(-50%, 14px); opacity: 0; pointer-events: none; }
+.gate-reveal.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+.gate-reveal .ic, .dots-btn .ic { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--red); position: relative; }
+.gate-reveal .ic::after { content: ""; position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px; border-radius: 50%; background: var(--red); animation: blink 2s infinite; }
+.gate-reveal.show .ic { animation: pRing 1.8s ease-out infinite; }
+@keyframes pRing { 0% { box-shadow: 0 0 0 0 rgba(240,68,58,.6); } 100% { box-shadow: 0 0 0 14px rgba(240,68,58,0); } }
+.dots-btn .ic { border-style: dotted; }
+.dots-btn { position: absolute; z-index: 5; left: 50%; bottom: 100px; transform: translateX(-46%); }
+@media (max-width: 800px) {
+  .gate-word { top: 18vh; }
+  .dots-btn { position: relative; left: auto; bottom: auto; transform: none; order: 3; align-self: center; margin: -96px 0 62px; z-index: 5; }
+}
+@media (prefers-reduced-motion: reduce) { .gate-reveal.show .ic { animation: none; } }
 
 /* ==========================================================================
    LIVE BUILD LAYER — agents, wireframes, guides, HUD

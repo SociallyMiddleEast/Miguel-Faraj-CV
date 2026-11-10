@@ -36,7 +36,7 @@
   if (reduce) {
     els.forEach(function (el) { el.classList.add('built'); });
     if (hud) hud.remove();
-    window.Build = { replay: function () {} };
+    window.Build = { replay: function () {}, start: function () {} };
     return;
   }
 
@@ -347,7 +347,10 @@
   // Make sure the page starts at the top so the build reads from the hero down
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   if (!location.hash) window.scrollTo(0, 0);
-  start();
+  // The particle entrance can hold the build until the visitor presses "Reveal"
+  var started = false;
+  function begin() { if (started) return; started = true; start(); }
+  if (!window.HOLD_BUILD) begin();
 
-  window.Build = { replay: replay, skip: skipAll };
+  window.Build = { replay: replay, skip: skipAll, start: begin };
 })();

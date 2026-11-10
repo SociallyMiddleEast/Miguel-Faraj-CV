@@ -10,7 +10,7 @@ css/style.css           design and build-animation styles
 js/build.js             the live-build engine (agents, wireframes, typing)
 js/visuals.js           the project "screens" drawn in SVG
 js/main.js              filters, search, pages, before/after slider, copy buttons, clock
-js/particles.js         the particle portrait in the hero (WebGL)
+js/particles.js         the particle entrance (WebGL)
 assets/miguel.webp      portrait (background removed)
 assets/Miguel_Faraj_CV.pdf
 assets/fonts/           Anton, Kaushan Script, Manrope (SIL Open Font License)
@@ -25,11 +25,11 @@ assets/fonts/           Anton, Kaushan Script, Manrope (SIL Open Font License)
 
 To preview on your computer first, open the folder in VS Code and use the Live Server extension (opening `index.html` directly by double-click also works).
 
-## Particle portrait
+## Particle entrance
 
-Click the hero photo and it bursts into a glowing 3D point cloud of you that turns with the mouse, and the big "PORTFOLIO" word changes from red to silver. Click again to bring the photo back. It also plays once on its own a few seconds after the page finishes building, then returns to the photo after 9 seconds.
+The site opens on a full-screen entrance: a glowing 3D point cloud of you that turns with the mouse, with "DEVELOPER" in big silver letters behind it. Pressing **Reveal** scatters the dots and opens the portfolio, and the live build starts. **Back to dots** under the hero photo returns to the entrance. To change the word, edit `<div class="gate-word">` in `index.html`.
 
-The particles are made from `assets/miguel.webp`, so changing the photo changes the portrait. Browsers only allow this when the page is served from a web address (GitHub Pages, or Live Server locally). If you open `index.html` by double-clicking, everything else works but the photo stays a normal photo.
+The particles are made from `assets/miguel.webp`. Browsers only allow this when the page is served from a web address (GitHub Pages, or Live Server locally). If you open `index.html` by double-clicking, the entrance is skipped and the portfolio opens directly.
 
 ## Editing
 

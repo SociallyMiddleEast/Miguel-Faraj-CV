@@ -1,23 +1,34 @@
 /* ==========================================================================
-   Particle portrait — click the hero photo and it bursts into a glowing 3D
-   point cloud of Miguel that turns with the mouse. Click again to reform.
-   WebGL, no libraries. Falls back silently if WebGL or image access fails.
+   Particle entrance — the site opens on a glowing 3D point cloud of Miguel
+   with "DEVELOPER" behind it. "Reveal" scatters the dots and opens the
+   portfolio (starting the live build); "Back to dots" in the hero returns here.
+   WebGL, no libraries. If WebGL or image access isn't available, the
+   entrance is skipped and the portfolio opens straight away.
    ========================================================================== */
 (function () {
   'use strict';
-  var hero = document.getElementById('hero');
-  var fig = hero && hero.querySelector('.hero-photo');
-  var img = fig && fig.querySelector('img');
-  var canvas = document.getElementById('pcloud');
-  var hint = document.getElementById('pHint');
-  if (!hero || !img || !canvas) return;
-
+  var html = document.documentElement;
+  var gate = document.getElementById('gate');
+  var img = document.getElementById('gateImg');
+  var canvas = document.getElementById('gateCanvas');
+  var revealBtn = document.getElementById('gateReveal');
+  var backBtn = document.getElementById('backToDots');
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  window.ParticleGate = { alive: true };
+
+  function startSite() { if (window.Build && window.Build.start) window.Build.start(); }
+  function skipGate() {
+    if (gate) gate.remove();
+    html.classList.remove('gate-open');
+    if (backBtn) backBtn.remove();
+    startSite();
+  }
+  if (!gate || !img || !canvas) { skipGate(); return; }
   var gl = canvas.getContext('webgl', { premultipliedAlpha: true, antialias: false, alpha: true });
-  if (!gl) { if (hint) hint.remove(); return; }
+  if (!gl) { skipGate(); return; }
 
   /* ---------- Build the point cloud from the photo ---------- */
-  var SAMPLE_W = window.innerWidth < 700 ? 150 : 230;
+  var SAMPLE_W = window.innerWidth < 700 ? 170 : 270;
   var count = 0, ready = false;
   var imgAspect = 1;
 
@@ -140,7 +151,7 @@
     gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FS));
     gl.linkProgram(prog);
     gl.useProgram(prog);
-  } catch (e) { if (hint) hint.remove(); return; }
+  } catch (e) { skipGate(); return; }
   function upload(name, data, size) {
     var loc = gl.getAttribLocation(prog, name);
     var buf = gl.createBuffer();
@@ -155,59 +166,38 @@
   gl.blendFunc(gl.ONE, gl.ONE);
 
   /* ---------- State ---------- */
-  var mode = 0;          // 1 = particles shown/forming, 0 = photo
+  var mode = 0;                 // 1 = dots forming / shown, 0 = dots scattering away
   var tStart = -10, origin = [0, 0];
   var mouse = [-9999, -9999], mouseN = [0, 0], rotY = 0, rotX = 0;
   var dpr = Math.min(window.devicePixelRatio || 1, 2);
-  var W = 0, H = 0, active = false, autoTimer = null, interacted = false;
+  var W = 0, H = 0, open = true;
 
   function resize() {
-    var r = hero.getBoundingClientRect();
-    W = r.width; H = r.height;
+    W = window.innerWidth; H = window.innerHeight;
     canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
     gl.viewport(0, 0, canvas.width, canvas.height);
   }
   function box() {
-    var hr = hero.getBoundingClientRect(), ir = img.getBoundingClientRect();
-    return [ir.left - hr.left + ir.width / 2, ir.top - hr.top + ir.height / 2, ir.width, ir.height];
+    var ir = img.getBoundingClientRect();
+    return [ir.left + ir.width / 2, ir.top + ir.height / 2, ir.width, ir.height];
   }
   function now() { return performance.now() / 1000; }
 
-  function setMode(m, ox, oy) {
-    if (!ready) return;
+  function setMode(m) {
     mode = m;
-    tStart = now();
+    tStart = now() - (reduce ? 10 : 0);
     var b = box();
-    origin = [ox != null ? ox : b[0], oy != null ? oy : b[1] + b[3] * .08];
-    hero.classList.toggle('particles', m === 1);
-    if (m === 1) { active = true; loopStart(); }
-    if (hint) hint.classList.add('gone');
-  }
-  function toggle(ev) {
-    interacted = true;
-    clearTimeout(autoTimer);
-    var hr = hero.getBoundingClientRect();
-    var ox = ev ? ev.clientX - hr.left : null, oy = ev ? ev.clientY - hr.top : null;
-    ripple(ox, oy);
-    setMode(mode === 1 ? 0 : 1, ox, oy);
-  }
-  function ripple(x, y) {
-    if (x == null) return;
-    var r = document.createElement('span');
-    r.className = 'p-ripple';
-    r.style.left = x + 'px'; r.style.top = y + 'px';
-    hero.appendChild(r);
-    setTimeout(function () { r.remove(); }, 900);
+    origin = [b[0], b[1] + b[3] * .1];
+    loopStart();
   }
 
-  /* ---------- Render loop ---------- */
+  /* ---------- Render loop (only while the entrance is showing) ---------- */
   var running = false;
   function loopStart() { if (!running) { running = true; requestAnimationFrame(frame); } }
   function frame() {
     var t = now() - tStart;
-    // rotation follows the mouse, with a slow idle sway
-    var targetY = mouseN[0] * .55 + Math.sin(now() * .5) * .22;
-    var targetX = mouseN[1] * .18;
+    var targetY = mouseN[0] * .55 + (reduce ? 0 : Math.sin(now() * .5) * .22);
+    var targetX = mouseN[1] * .08;
     rotY += (targetY - rotY) * .06;
     rotX += (targetX - rotX) * .06;
     var b = box();
@@ -219,45 +209,64 @@
     gl.uniform2f(U.uMouse, mouse[0], mouse[1]);
     gl.uniform1f(U.uT, t);
     gl.uniform1f(U.uMode, mode);
-    gl.uniform1f(U.uTime, now());
+    gl.uniform1f(U.uTime, reduce ? 0 : now());
     gl.uniform1f(U.uRotY, rotY);
     gl.uniform1f(U.uRotX, rotX);
     gl.uniform1f(U.uPR, dpr);
     gl.drawArrays(gl.POINTS, 0, count);
-    if (mode === 0 && t > 2.4) { running = false; active = false; gl.clear(gl.COLOR_BUFFER_BIT); return; }
+    if (!open && mode === 0 && t > 2.4) { running = false; gl.clear(gl.COLOR_BUFFER_BIT); return; }
     requestAnimationFrame(frame);
   }
 
-  /* ---------- Input ---------- */
-  fig.addEventListener('click', function (e) { toggle(e); });
-  if (hint) hint.addEventListener('click', function (e) { e.stopPropagation(); toggle(e); });
-  hero.addEventListener('pointermove', function (e) {
-    var hr = hero.getBoundingClientRect();
-    mouse = [e.clientX - hr.left, e.clientY - hr.top];
+  /* ---------- Reveal / back ---------- */
+  var first = true;
+  function reveal() {
+    if (!open) return;
+    open = false;
+    revealBtn.classList.remove('show');
+    setMode(0);                                   // dots scatter
+    gate.classList.add('leaving');
+    setTimeout(function () {
+      gate.classList.add('hidden');
+      html.classList.remove('gate-open');
+      window.scrollTo(0, 0);
+      if (first) { first = false; startSite(); }  // the live build plays the first time
+    }, reduce ? 0 : 1100);
+  }
+  function back() {
+    if (open) return;
+    open = true;
+    gate.classList.remove('hidden');
+    html.classList.add('gate-open');
+    void gate.offsetWidth;
+    gate.classList.remove('leaving');
+    setTimeout(function () {
+      setMode(1);
+      setTimeout(function () { revealBtn.classList.add('show'); }, reduce ? 0 : 1600);
+    }, reduce ? 0 : 350);
+  }
+  revealBtn.addEventListener('click', reveal);
+  if (backBtn) backBtn.addEventListener('click', back);
+  document.addEventListener('keydown', function (e) { if (open && (e.key === 'Enter' || e.key === ' ') && document.activeElement === document.body) { e.preventDefault(); reveal(); } });
+
+  gate.addEventListener('pointermove', function (e) {
+    mouse = [e.clientX, e.clientY];
     mouseN = [(e.clientX / window.innerWidth - .5) * 2, (e.clientY / window.innerHeight - .5) * 2];
   });
-  hero.addEventListener('pointerleave', function () { mouse = [-9999, -9999]; mouseN = [0, 0]; });
+  gate.addEventListener('pointerleave', function () { mouse = [-9999, -9999]; mouseN = [0, 0]; });
   window.addEventListener('resize', resize);
 
   /* ---------- Start ---------- */
   function init() {
     resize();
-    ready = buildCloud();
-    if (!ready) { if (hint) hint.remove(); fig.style.cursor = ''; return; }
-    fig.classList.add('p-ready');
-    if (reduce) return;
-    // play once on its own after the hero has been built, then reform after a while
-    var waitBuilt = setInterval(function () {
-      if (!fig.classList.contains('built') && document.documentElement.classList.contains('building')) return;
-      clearInterval(waitBuilt);
-      autoTimer = setTimeout(function () {
-        if (interacted) return;
-        setMode(1);
-        autoTimer = setTimeout(function () { if (!interacted) setMode(0); }, 9000);
-      }, 2600);
-    }, 200);
+    if (!buildCloud()) { skipGate(); return; }   // e.g. opened from file://
+    gate.classList.add('ready');
+    setTimeout(function () {
+      setMode(1);
+      setTimeout(function () { revealBtn.classList.add('show'); revealBtn.focus({ preventScroll: true }); }, reduce ? 0 : 1800);
+    }, reduce ? 0 : 250);
   }
-  if (img.complete && img.naturalWidth) init(); else img.addEventListener('load', init);
+  if (img.complete && img.naturalWidth) init(); else { img.addEventListener('load', init); img.addEventListener('error', skipGate); }
 
-  window.ParticlePortrait = { toggle: function () { toggle(null); }, show: function () { setMode(1); }, hide: function () { setMode(0); } };
+  window.ParticleGate = { alive: true, reveal: reveal, back: back };
 })();

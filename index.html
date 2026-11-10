@@ -12,9 +12,18 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23f0443a'/%3E%3Ctext x='16' y='23' font-family='Arial Black,Arial' font-weight='900' font-size='20' text-anchor='middle' fill='%23fff'%3EM%3C/text%3E%3C/svg%3E">
   <link rel="preload" href="assets/fonts/anton-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/style.css">
-  <script>document.documentElement.classList.add('js');</script>
+  <script>document.documentElement.classList.add('js','gate-open');window.HOLD_BUILD=true;</script>
 </head>
 <body>
+
+<!-- Particle entrance (js/particles.js) -->
+<div class="gate" id="gate">
+  <div class="gate-word" aria-hidden="true">DEVELOPER</div>
+  <div class="gate-fig" aria-hidden="true"><img id="gateImg" src="assets/miguel.webp" alt=""></div>
+  <canvas id="gateCanvas" aria-hidden="true"></canvas>
+  <h1 class="sr-only">Miguel Faraj, Senior Digital Engineer</h1>
+  <button type="button" class="gate-reveal" id="gateReveal"><span class="ic" aria-hidden="true"></span>Reveal</button>
+</div>
 
 <!-- Live-build layer: agents, wireframes, guides (filled by js/build.js) -->
 <div class="build-layer" id="buildLayer" aria-hidden="true"></div>
@@ -47,19 +56,18 @@
 
 <!-- ============ HERO ============ -->
 <section class="hero" id="hero">
-  <canvas id="pcloud" aria-hidden="true"></canvas>
   <div class="wrap hero-grid">
     <div class="hero-kicker" data-b="type">
       <strong>Senior Digital Engineer</strong><br>Industrial systems builder
     </div>
     <div class="hero-note" data-b="type">Every plant<br>a different story</div>
 
-    <div class="bigword" data-b="wipe" data-text="PORTFOLIO" aria-hidden="true">PORTFOLIO</div>
+    <div class="bigword" data-b="wipe" aria-hidden="true">PORTFOLIO</div>
 
     <figure class="hero-photo" data-b="media">
       <img src="assets/miguel.webp" alt="Portrait of Miguel Faraj" width="760" height="1106">
     </figure>
-    <button type="button" class="p-hint" id="pHint" aria-label="Turn the photo into particles"><i></i><span>Click me</span></button>
+    <button type="button" class="dots-btn" id="backToDots"><span class="ic" aria-hidden="true"></span>Back to dots</button>
 
     <div class="hero-left">
       <span class="hello" data-b="type">Hello, I'm</span>
@@ -326,5 +334,9 @@
 <script src="js/build.js"></script>
 <script src="js/main.js"></script>
 <script src="js/particles.js"></script>
+<script>
+  // safety net: if the entrance script didn't run, open the portfolio anyway
+  setTimeout(function () { if (!window.ParticleGate) { var g = document.getElementById('gate'); if (g) g.remove(); document.documentElement.classList.remove('gate-open'); window.Build && Build.start(); } }, 1500);
+</script>
 </body>
 </html>
